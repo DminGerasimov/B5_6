@@ -22,6 +22,7 @@ def prn_matix(L):                   # печать текущего состоя
         for v in range (len(temp)):
             text += " " + str(temp[v])
         print("   " + text)
+    print("")
 
 
 def ask_step(v_h_str, x_o):                     # ввод игроком позиции на игровом поле
@@ -57,7 +58,32 @@ def ask_yes_no(info):   # функция заправшивает Yes, No и в�
 def swich_current_player(cp):          # переключение текущего игрока "х" <--> "0"
     return "x" if cp == "0" else "0"
 
-def check_winner(L):    # проверка условия обеды игрока
+def check_winner(L, cp):    # проверка условия обеды игрока
+    temp = []               # перевод сложного списка в простой
+    for ind in range(1, 4):
+        t = L[ind]
+        for ind_ in range(1, 4):
+            temp.append(t[ind_])
+
+    # проверка вертикальных линий
+    for ind in range(0, 3):
+        d1 = temp[ind:9:3]
+        if d1[0] == cp and d1[1] == cp and d1[2] == cp:
+            return True
+
+    # проверка диагоналей
+    d1 = temp[0:9:4]
+    if d1[0] == cp and d1[1] == cp and d1[2] == cp:
+        return True
+    d1 = temp[2:9:2]
+    if d1[0] == cp and d1[1] == cp and d1[2] == cp:
+        return True
+
+    # проверка горизонтальных линий
+    for horiz in L:
+        if horiz[1] == cp and horiz[2] == cp and horiz[3] == cp:
+            return True
+    
     return False
 
 
@@ -80,18 +106,19 @@ def playgame(): # основной игровой цикл программы
             L[h] = temp
             clear()
             prn_matix(L)
-            if check_winner(L):
-                print(f" Поздравляем!!! Победил игрок {сurrent_player}")
-                if ask_yes_no(" Сыграть ещё раз? (Yes/No): "):
+            if check_winner(L, сurrent_player):
+                print(f"\n       Поздравляем!!! Победил игрок {сurrent_player}")
+                if ask_yes_no("\n Сыграть ещё раз? (Yes/No): "):
                     L = construct_matrix()
+                    сurrent_player = "x"
                     clear()
                     prn_matix(L) # Печать чистой матрицы игрового поля
                     current_step = 0
                     continue
                 else:
                     break
-            elif current_step > 7:
-                if ask_yes_no(" Ничья! Сыграть ещё раз? (Yes/No): "):
+            elif current_step == 9 and not check_winner(L, сurrent_player):
+                if ask_yes_no("\n Ничья! Сыграть ещё раз? (Yes/No): "):
                     L = construct_matrix()
                     clear()
                     prn_matix(L) # Печать чистой матрицы игрового поля
